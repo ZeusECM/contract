@@ -50,21 +50,19 @@ contract Zeus is ZeusPhases {
         tokenPrice = _tokenPrice;
 
         phases.push(Phase(tokenPrice * etherWeis, preIcoMaxAmount * decimalUnits, preIcoMinCap, _preIcoSince, _preIcoTill, false));
-        phases.push(Phase(tokenPrice * etherWeis, icoMaxAmount * decimalUnits, preIcoMinCap, _icoSince, _icoTill, false));
+        phases.push(Phase(tokenPrice * etherWeis, icoMaxAmount * decimalUnits, icoMinCap, _icoSince, _icoTill, false));
 
-        distributionAddress1 = '0xB3927748906763F5906C83Ed105be1C1A6d03FFE';
-        distributionAddress2 = '0x8e749918fC86e3F40d1C1a1457a0f98905cD456A';
-        distributionAddress3 = '0x648340938fBF7b2F2A676FCCB806cd597279cA3a';
-        distributionAddress4 = '0xd4564281fAE29Ca5c7345Fe9a4602E6b35857dA3';
-        distributionAddress5 = '0x6Ed01383BfdCe351A616321B1A8D08De003D493A';
-        successFeeAcc = '0xdA39e0Ce2adf93129D04F53176c7Bfaaae8B051a';
-        bountyAcc = '0x0064952457905eBFB9c0292200A74B1d7414F081';
+        distributionAddress1 = 0xB3927748906763F5906C83Ed105be1C1A6d03FFE;
+        distributionAddress2 = 0x8e749918fC86e3F40d1C1a1457a0f98905cD456A;
+        distributionAddress3 = 0x648340938fBF7b2F2A676FCCB806cd597279cA3a;
+        distributionAddress4 = 0xd4564281fAE29Ca5c7345Fe9a4602E6b35857dA3;
+        distributionAddress5 = 0x6Ed01383BfdCe351A616321B1A8D08De003D493A;
+        successFeeAcc = 0xdA39e0Ce2adf93129D04F53176c7Bfaaae8B051a;
+        bountyAcc = 0x0064952457905eBFB9c0292200A74B1d7414F081;
     }
 
     function setSellPrice(uint256 value) onlyOwner {
-        if (value == 0) {
-            return false;
-        }
+        require(value > 0);
         for (uint i = 0; i < phases.length; i++) {
             Phase storage phase = phases[i];
             phase.price = value * etherWeis;
@@ -186,7 +184,7 @@ contract Zeus is ZeusPhases {
         if (icoPhase.till < now && icoPhase.minCap <= soldTokens) {
             return false;
         }
-        if (!icoEtherBalances[msg.sender].isValue) {
+        if (icoEtherBalances[msg.sender] == 0) {
             return false;
         }
 

@@ -1,8 +1,5 @@
-// var ConvertLib = artifacts.require("");
-// var MetaCoin = artifacts.require("");
+var Zeus = artifacts.require('./Zeus.sol');
 
-// module.exports = function(deployer) {
-//   deployer.deploy(ConvertLib);
-//   deployer.link(ConvertLib, MetaCoi);
-//   deployer.deploy(MetaCoin);
-// };
+module.exports = function(deployer) {
+  deployer.deploy(Zeus);
+};
