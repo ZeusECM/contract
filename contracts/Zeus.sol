@@ -39,7 +39,6 @@ contract Zeus is ZeusPhases {
         uint256 _preIcoSince,
         uint256 _preIcoTill,
         uint256 preIcoMaxAmount,
-        uint256 preIcoMinCap,
         uint256 _icoSince,
         uint256 _icoTill,
         uint256 icoMaxAmount,
@@ -49,8 +48,8 @@ contract Zeus is ZeusPhases {
         standard = 'Zeus 0.1';
         tokenPrice = _tokenPrice;
 
-        phases.push(Phase(tokenPrice * etherWeis, preIcoMaxAmount * decimalUnits, preIcoMinCap, _preIcoSince, _preIcoTill, false));
-        phases.push(Phase(tokenPrice * etherWeis, icoMaxAmount * decimalUnits, icoMinCap, _icoSince, _icoTill, false));
+        phases.push(Phase(tokenPrice, preIcoMaxAmount, 0, _preIcoSince, _preIcoTill, false));
+        phases.push(Phase(tokenPrice, icoMaxAmount, icoMinCap, _icoSince, _icoTill, false));
 
         distributionAddress1 = 0xB3927748906763F5906C83Ed105be1C1A6d03FFE;
         distributionAddress2 = 0x8e749918fC86e3F40d1C1a1457a0f98905cD456A;
@@ -77,7 +76,7 @@ contract Zeus is ZeusPhases {
         uint256 amount = getIcoTokensAmount(value, time);
 
         //Minimum investment (Euro transfer) in issuer wallet (# of tokens)
-        if (amount < 10) {
+        if (amount < 10 * 10 ** decimals) {
             return false;
         }
 
@@ -103,7 +102,7 @@ contract Zeus is ZeusPhases {
         if (phase.till < time) {
             return;
         }
-        icoEtherBalances[_address] = value;
+        icoEtherBalances[_address] += value;
     }
 
     function() payable {
@@ -187,10 +186,8 @@ contract Zeus is ZeusPhases {
         if (icoEtherBalances[msg.sender] == 0) {
             return false;
         }
-
-        msg.sender.transfer(icoEtherBalances[msg.sender]);
-
         setBalance(msg.sender, 0);
+        msg.sender.transfer(icoEtherBalances[msg.sender]);
     }
 
     function burn() onlyOwner returns (bool){
