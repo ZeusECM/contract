@@ -54,8 +54,21 @@ contract ZeusPhases is ERC20 {
         return amount;
     }
 
-    function getBonusAmount(uint256 time, uint256 amount) returns (uint256) {
+    function getPreICOBonusAmount(uint256 time, uint256 amount) returns (uint256) {
+        Phase storage icoPhase = phases[0];
 
+        if (time < icoPhase.since) {
+            return 0;
+        }
+
+        if (time > icoPhase.till) {
+            return 0;
+        }
+
+        return amount * 50 / 100;
+    }
+
+    function getICOBonusAmount(uint256 time, uint256 amount) returns (uint256) {
         Phase storage icoPhase = phases[1];
 
         if (time < icoPhase.since) {

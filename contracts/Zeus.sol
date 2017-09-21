@@ -75,12 +75,13 @@ contract Zeus is ZeusPhases {
 
         uint256 amount = getIcoTokensAmount(value, time);
 
-        //Minimum investment (Euro transfer) in issuer wallet (# of tokens)
+        //Minimum investment (Euro transfer) in issuer wallet (# of tokens) for preICO & for ICO
         if (amount < 10 * 10 ** decimals) {
             return false;
         }
 
-        amount += getBonusAmount(time, amount);
+        amount += getPreICOBonusAmount(time, amount);
+        amount += getICOBonusAmount(time, amount);
 
         bool status = transferInternal(this, _address, amount);
 
@@ -133,29 +134,26 @@ contract Zeus is ZeusPhases {
         phase.isSucceed = true;
 
         if (phaseId == 0) {
-            sendPreIcoBonuses();
-            sendBonusesToFeeAcc();
+            sendPreICOEthers();
         }
         if (phaseId == 1) {
-            sendIcoBonuses();
-            sendBonusesToFeeAcc();
+            sendICOEthers();
         }
 
         return true;
     }
 
-    function sendPreIcoBonuses() internal {
+    function sendPreICOEthers() internal {
         if (collectedEthers > 0) {
-            uint256 bonusesAmount = collectedEthers / 2;
+            distributionAddress1.transfer(collectedEthers * 100 / 87);
+            distributionAddress2.transfer(collectedEthers * 100 / 5);
+            distributionAddress3.transfer(collectedEthers * 100 / 5);
 
-            distributionAddress1.transfer(bonusesAmount * 100 / 87);
-            distributionAddress2.transfer(bonusesAmount * 100 / 5);
-            distributionAddress3.transfer(bonusesAmount * 100 / 5);
-            successFeeAcc.transfer(bonusesAmount * 100 / 3);
+            successFeeAcc.transfer(collectedEthers * 100 / 3);
         }
     }
 
-    function sendIcoBonuses() internal {
+    function sendICOEthers() internal {
         if (soldTokens > 0) {
             transferInternal(this, bountyAcc, soldTokens * 100 / 2);
         }
@@ -165,13 +163,8 @@ contract Zeus is ZeusPhases {
             distributionAddress1.transfer(collectedEthers * 100 / 15);
             distributionAddress3.transfer(collectedEthers * 100 / 5);
             distributionAddress2.transfer(collectedEthers * 100 / 5);
-            successFeeAcc.transfer(collectedEthers * 100 / 3);
-        }
-    }
 
-    function sendBonusesToFeeAcc() internal {
-        if (soldTokens > 0) {
-            transferInternal(this, successFeeAcc, soldTokens * 100 / 3);
+            successFeeAcc.transfer(collectedEthers * 100 / 3);
         }
     }
 
@@ -187,7 +180,9 @@ contract Zeus is ZeusPhases {
             return false;
         }
         setBalance(msg.sender, 0);
-        msg.sender.transfer(icoEtherBalances[msg.sender]);
+        uint256 refundAmount = icoEtherBalances[msg.sender];
+        icoEtherBalances[msg.sender] = 0;
+        msg.sender.transfer(refundAmount);
     }
 
     function burn() onlyOwner returns (bool){
@@ -208,6 +203,10 @@ contract Zeus is ZeusPhases {
         }
 
         return false;
+    }
+
+    function issue(address _addr, uint256 _amount) onlyOwner returns (bool){
+        return transferInternal(this, _addr, _amount);
     }
 
 }
