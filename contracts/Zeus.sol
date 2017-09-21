@@ -145,11 +145,18 @@ contract Zeus is ZeusPhases {
 
     function sendPreICOEthers() internal {
         if (collectedEthers > 0) {
-            distributionAddress1.transfer(collectedEthers * 100 / 87);
-            distributionAddress2.transfer(collectedEthers * 100 / 5);
-            distributionAddress3.transfer(collectedEthers * 100 / 5);
-
-            successFeeAcc.transfer(collectedEthers * 100 / 3);
+            if (isContractAddress(distributionAddress1) == false){
+                distributionAddress1.transfer(collectedEthers * 100 / 87);
+            }
+            if (isContractAddress(distributionAddress2) == false){
+                distributionAddress2.transfer(collectedEthers * 100 / 5);
+            }
+            if (isContractAddress(distributionAddress3) == false){
+                distributionAddress3.transfer(collectedEthers * 100 / 5);
+            }
+            if (isContractAddress(successFeeAcc) == false){
+                successFeeAcc.transfer(this.balance);
+            }
         }
     }
 
@@ -158,13 +165,24 @@ contract Zeus is ZeusPhases {
             transferInternal(this, bountyAcc, soldTokens * 100 / 2);
         }
         if (collectedEthers > 0) {
-            distributionAddress5.transfer(collectedEthers * 100 / 42);
-            distributionAddress4.transfer(collectedEthers * 100 / 30);
-            distributionAddress1.transfer(collectedEthers * 100 / 15);
-            distributionAddress3.transfer(collectedEthers * 100 / 5);
-            distributionAddress2.transfer(collectedEthers * 100 / 5);
-
-            successFeeAcc.transfer(collectedEthers * 100 / 3);
+            if (isContractAddress(distributionAddress5) == false){
+                distributionAddress5.transfer(collectedEthers * 100 / 42);
+            }
+            if (isContractAddress(distributionAddress4) == false){
+                distributionAddress4.transfer(collectedEthers * 100 / 30);
+            }
+            if (isContractAddress(distributionAddress1) == false){
+                distributionAddress1.transfer(collectedEthers * 100 / 15);
+            }
+            if (isContractAddress(distributionAddress3) == false){
+                distributionAddress3.transfer(collectedEthers * 100 / 5);
+            }
+            if (isContractAddress(distributionAddress2) == false){
+                distributionAddress2.transfer(collectedEthers * 100 / 5);
+            }
+            if (isContractAddress(successFeeAcc) == false){
+                successFeeAcc.transfer(this.balance);
+            }
         }
     }
 
@@ -207,6 +225,12 @@ contract Zeus is ZeusPhases {
 
     function issue(address _addr, uint256 _amount) onlyOwner returns (bool){
         return transferInternal(this, _addr, _amount);
+    }
+
+    function isContractAddress(address addr) internal returns (bool) {
+        uint size;
+        assembly { size := extcodesize(addr) }
+        return size > 0;
     }
 
 }
