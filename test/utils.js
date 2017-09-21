@@ -98,6 +98,53 @@ function getTxCost(result) {
     return result.receipt.gasUsed * tx.gasPrice;
 }
 
+
+function getPhase(instance, id) {
+    return instance.phases.call(id)
+        .then(function(obj) {
+            if(obj.length == 6) {
+                return {
+                    price: obj[0].valueOf(),
+                    maxAmount: obj[1].valueOf(),
+                    minCap: obj[2].valueOf(),
+                    since: obj[3].valueOf(),
+                    till: obj[4].valueOf(),
+                    isSucceed: obj[5].valueOf(),
+                }
+            }
+            if(obj.length == 3) {
+                return {
+                    priceShouldMultiply: obj[0].valueOf(),
+                    price: obj[1].valueOf(),
+                    maxAmount: obj[2].valueOf(),
+                }
+            }
+
+            return {
+                price: obj[0].valueOf(),
+                maxAmount: obj[1].valueOf(),
+            }
+        });
+}
+
+function checkPhase(phase, price, maxAmount, minCap, since, till, isSucceed) {
+    return new Promise(function(resolve, reject) {
+        try {
+            assert.equal(phase.price, price, "phase price is not equal");
+            assert.equal(phase.maxAmount, maxAmount, "phase maxAmount is not equal");
+            assert.equal(phase.minCap, minCap, "phase minCap is not equal");
+            assert.equal(phase.since, since, "phase since is not equal");
+            assert.equal(phase.till, till, "phase till is not equal");
+            assert.equal(phase.isSucceed, isSucceed, "phase isSucceed is not equal");
+
+            resolve();
+        }
+        catch(err) {
+            reject(err);
+        }
+    });
+}
+
 module.exports = {
     receiptShouldSucceed: receiptShouldSucceed,
     receiptShouldFailed: receiptShouldFailed,
@@ -106,5 +153,7 @@ module.exports = {
     timeout: timeout,
     getEtherBalance: getEtherBalance,
     checkEtherBalance: checkEtherBalance,
-    getTxCost: getTxCost
+    getTxCost: getTxCost,
+    getPhase: getPhase,
+    checkPhase: checkPhase,
 };
