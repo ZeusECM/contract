@@ -204,7 +204,7 @@ contract Zeus is ZeusPhases {
             uint256 diff = initialSupply - soldTokens;
 
             transferInternal(this, distributionAddress1, diff * 15 / 100);
-            transferInternal(this, bountyAcc, diff * 15 / 100);
+            transferInternal(this, bountyAcc, diff * 2 / 100);
 
             setBalance(this, 0);
 
