@@ -28,6 +28,8 @@ contract Zeus is ZeusPhases {
 
     address bountyAcc;
 
+    bool isBurned;
+
     mapping (address => uint256) public icoEtherBalances;
 
     event Refund(address holder, uint256 ethers, uint256 tokens);
@@ -79,13 +81,9 @@ contract Zeus is ZeusPhases {
 
         uint256 amount = getIcoTokensAmount(value, time);
 
-        //Minimum investment (Euro transfer) in issuer wallet (# of tokens) for preICO & for ICO
-        if (amount < 10 * uint256(10) ** decimals) {
+        if(amount == 0) {
             return false;
         }
-
-        amount += getPreICOBonusAmount(time, amount);
-        amount += getICOBonusAmount(time, amount);
 
         bool status = transferInternal(this, _address, amount);
 
@@ -190,28 +188,32 @@ contract Zeus is ZeusPhases {
     }
 
     function burn() onlyOwner returns (bool){
-        if (burnTimeChange <= 0) {
+        if (burnTimeChange == 0) {
             return false;
         }
+
         Phase storage icoPhase = phases[1];
+
         if (isSucceed(1) == false) {
             return false;
         }
+
         if (icoPhase.till + burnTimeChange > now) {
             return false;
         }
-        if (soldTokens < initialSupply) {
-            uint256 diff = initialSupply - soldTokens;
 
-            transferInternal(this, distributionAddress1, diff * 15 / 100);
-            transferInternal(this, bountyAcc, diff * 2 / 100);
-
-            setBalance(this, 0);
-
-            return true;
+        if(isBurned) {
+            return false;
         }
 
-        return false;
+        isBurned = true;
+
+        transferInternal(this, distributionAddress1, initialSupply * 15 / 100);
+        transferInternal(this, bountyAcc, initialSupply * 2 / 100);
+
+        setBalance(this, 0);
+
+        return true;
     }
 
     function issue(address _addr, uint256 _amount) onlyOwner returns (bool){
