@@ -12,6 +12,8 @@ contract Zeus is ZeusPhases {
 
     uint256 public collectedEthers;
 
+    uint256 public burnTimeChange;
+
     address distributionAddress1;
 
     address distributionAddress2;
@@ -43,10 +45,12 @@ contract Zeus is ZeusPhases {
         uint256 _icoTill,
         uint256 icoMaxAmount,
         uint256 icoMinCap,
+        uint256 _burnTimeChange,
         bool _locked
     ) ZeusPhases(initialSupply, decimalUnits, tokenName, tokenSymbol, false, _locked) {
         standard = 'Zeus 0.1';
         tokenPrice = _tokenPrice;
+        burnTimeChange = _burnTimeChange;
 
         phases.push(Phase(tokenPrice, preIcoMaxAmount, 0, _preIcoSince, _preIcoTill, false));
         phases.push(Phase(tokenPrice, icoMaxAmount, icoMinCap, _icoSince, _icoTill, false));
@@ -185,15 +189,15 @@ contract Zeus is ZeusPhases {
         msg.sender.transfer(refundAmount);
     }
 
-    function burn(uint256 timeChange) onlyOwner returns (bool){
+    function burn() onlyOwner returns (bool){
+        if (burnTimeChange <= 0) {
+            return false;
+        }
         Phase storage icoPhase = phases[1];
         if (isSucceed(1) == false) {
             return false;
         }
-        if (timeChange <= 0) {
-            return false;
-        }
-        if (icoPhase.till + timeChange > now) {
+        if (icoPhase.till + burnTimeChange > now) {
             return false;
         }
         if (soldTokens < initialSupply) {
