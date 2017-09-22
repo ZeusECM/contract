@@ -47,7 +47,7 @@ contract ZeusPhases is ERC20 {
 
             amount += value * (uint256(10) ** decimals) / phase.price;
 
-            if (phase.maxAmount > amount + soldTokens) {
+            if (phase.maxAmount < amount + soldTokens) {
                 return 0;
             }
         }
