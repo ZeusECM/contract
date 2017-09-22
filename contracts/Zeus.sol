@@ -64,7 +64,7 @@ contract Zeus is ZeusPhases {
         require(value > 0);
         for (uint i = 0; i < phases.length; i++) {
             Phase storage phase = phases[i];
-            phase.price = value * etherWeis;
+            phase.price = value;
         }
     }
 

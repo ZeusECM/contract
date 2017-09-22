@@ -101,6 +101,11 @@ contract('Zeus', function(accounts) {
             .then(() => Utils.receiptShouldSucceed)
             .then(() => instance.collectedEthers.call())
             .then((result) => assert.equal(result.valueOf(), '1000000000000000000', 'collected amount is not equal'))
+            .then(() => instance.soldTokens.call())
+            //1000000000000000000 * 100 / 4201680000000000 = 23800.003808 | + 23800.003808 * 50 / 100 = 35700
+            .then((result) => assert.equal(result.valueOf(), '35700', 'collected amount is not equal'))
+
+            // .then(() => Utils.balanceShouldEqualTo(instance, instance.address, new BigNumber(58000000).mul(precision) - new BigNumber(35700)))
 
     });
 
