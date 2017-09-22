@@ -40,6 +40,7 @@ contract ZeusPhases is ERC20 {
             if (phase.since > time) {
                 continue;
             }
+
             if (phase.till < time) {
                 continue;
             }

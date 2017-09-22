@@ -97,7 +97,7 @@ contract('Zeus', function(accounts) {
 
             .then(() => Utils.balanceShouldEqualTo(instance, instance.address, new BigNumber(58000000).mul(precision)))
             .then(() => Utils.balanceShouldEqualTo(instance, accounts[1], new BigNumber(0).valueOf()))
-            .then(() => instance.sendTransaction({value: 1}))
+            .then(() => instance.sendTransaction({value: 1000}))
             // .then(() => Utils.receiptShouldFailed)
             // .then(() => instance.collectedEthers.call())
             // .then(() => assert.equal(result.valueOf(), '1', 'collected amount is not equal'))

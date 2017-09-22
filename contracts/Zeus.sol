@@ -76,7 +76,7 @@ contract Zeus is ZeusPhases {
         uint256 amount = getIcoTokensAmount(value, time);
 
         //Minimum investment (Euro transfer) in issuer wallet (# of tokens) for preICO & for ICO
-        if (amount < 10 * uint(10) ** decimals) {
+        if (amount < 10 * uint256(10) ** decimals) {
             return false;
         }
 

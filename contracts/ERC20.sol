@@ -98,12 +98,12 @@ contract ERC20 is Ownable {
         return balances[_address];
     }
 
-    function transfer(address _to, uint256 _value) onlyPayloadSize(2) {
+    function transfer(address _to, uint256 _value) onlyPayloadSize(2) returns (bool) {
         require(locked == false);
-
         bool status = transferInternal(msg.sender, _to, _value);
-
         require(status == true);
+
+        return true;
     }
 
     function approve(address _spender, uint256 _value) returns (bool success) {
