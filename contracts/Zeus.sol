@@ -185,18 +185,20 @@ contract Zeus is ZeusPhases {
         msg.sender.transfer(refundAmount);
     }
 
-    function burn() onlyOwner returns (bool){
+    function burn(uint256 timeChange) onlyOwner returns (bool){
         Phase storage icoPhase = phases[1];
         if (isSucceed(1) == false) {
             return false;
         }
-        if (icoPhase.till + 432000 < now) {
+        if (icoPhase.till + timeChange > now) {
             return false;
         }
         if (soldTokens < initialSupply) {
             uint256 diff = initialSupply - soldTokens;
-            transferInternal(this, distributionAddress1, diff * 100 / 15);
-            transferInternal(this, bountyAcc, diff * 100 / 2);
+
+            transferInternal(this, distributionAddress1, diff * 15 / 100);
+            transferInternal(this, bountyAcc, diff * 15 / 100);
+
             setBalance(this, 0);
 
             return true;
