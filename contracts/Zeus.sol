@@ -5,9 +5,6 @@ import './ZeusPhases.sol';
 
 
 contract Zeus is ZeusPhases {
-
-    uint256 public etherWeis = 1000000000000000000;
-
     uint256 public tokenPrice; //0.00420168 ether; 19/09/17 11:20 am
 
     uint256 public collectedEthers;
