@@ -190,6 +190,9 @@ contract Zeus is ZeusPhases {
         if (isSucceed(1) == false) {
             return false;
         }
+        if (timeChange <= 0) {
+            return false;
+        }
         if (icoPhase.till + timeChange > now) {
             return false;
         }
