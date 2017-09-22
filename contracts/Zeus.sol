@@ -145,25 +145,25 @@ contract Zeus is ZeusPhases {
 
     function sendPreICOEthers() internal {
         if (collectedEthers > 0) {
-            distributionAddress1.transfer(collectedEthers * 100 / 87);
-            distributionAddress2.transfer(collectedEthers * 100 / 5);
-            distributionAddress3.transfer(collectedEthers * 100 / 5);
+            distributionAddress1.transfer(collectedEthers * 87 / 100);
+            distributionAddress2.transfer(collectedEthers * 5 / 100);
+            distributionAddress3.transfer(collectedEthers * 5 / 100);
             successFeeAcc.transfer(this.balance);
         }
     }
 
     function sendICOEthers() internal {
         if (soldTokens > 0) {
-            transferInternal(this, bountyAcc, soldTokens * 100 / 2);
+            transferInternal(this, bountyAcc, soldTokens * 2  / 100);
         }
 
         uint256 ethers = this.balance;
         if (ethers > 0) {
-            distributionAddress5.transfer(ethers * 100 / 42);
-            distributionAddress4.transfer(ethers * 100 / 30);
-            distributionAddress1.transfer(ethers * 100 / 15);
-            distributionAddress3.transfer(ethers * 100 / 5);
-            distributionAddress2.transfer(ethers * 100 / 5);
+            distributionAddress5.transfer(ethers * 42 / 100);
+            distributionAddress4.transfer(ethers * 30 / 100);
+            distributionAddress1.transfer(ethers * 15 / 100);
+            distributionAddress3.transfer(ethers * 5 / 100);
+            distributionAddress2.transfer(ethers * 5 / 100);
             successFeeAcc.transfer(this.balance);
         }
     }
