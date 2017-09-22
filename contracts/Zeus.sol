@@ -39,7 +39,6 @@ contract Zeus is ZeusPhases {
         uint256 _preIcoSince,
         uint256 _preIcoTill,
         uint256 preIcoMaxAmount,
-        uint256 preIcoMinCap,
         uint256 _icoSince,
         uint256 _icoTill,
         uint256 icoMaxAmount,
@@ -49,22 +48,20 @@ contract Zeus is ZeusPhases {
         standard = 'Zeus 0.1';
         tokenPrice = _tokenPrice;
 
-        phases.push(Phase(tokenPrice * etherWeis, preIcoMaxAmount * decimalUnits, preIcoMinCap, _preIcoSince, _preIcoTill, false));
-        phases.push(Phase(tokenPrice * etherWeis, icoMaxAmount * decimalUnits, preIcoMinCap, _icoSince, _icoTill, false));
+        phases.push(Phase(tokenPrice, preIcoMaxAmount, 0, _preIcoSince, _preIcoTill, false));
+        phases.push(Phase(tokenPrice, icoMaxAmount, icoMinCap, _icoSince, _icoTill, false));
 
-        distributionAddress1 = '0xB3927748906763F5906C83Ed105be1C1A6d03FFE';
-        distributionAddress2 = '0x8e749918fC86e3F40d1C1a1457a0f98905cD456A';
-        distributionAddress3 = '0x648340938fBF7b2F2A676FCCB806cd597279cA3a';
-        distributionAddress4 = '0xd4564281fAE29Ca5c7345Fe9a4602E6b35857dA3';
-        distributionAddress5 = '0x6Ed01383BfdCe351A616321B1A8D08De003D493A';
-        successFeeAcc = '0xdA39e0Ce2adf93129D04F53176c7Bfaaae8B051a';
-        bountyAcc = '0x0064952457905eBFB9c0292200A74B1d7414F081';
+        distributionAddress1 = 0xB3927748906763F5906C83Ed105be1C1A6d03FFE;
+        distributionAddress2 = 0x8e749918fC86e3F40d1C1a1457a0f98905cD456A;
+        distributionAddress3 = 0x648340938fBF7b2F2A676FCCB806cd597279cA3a;
+        distributionAddress4 = 0xd4564281fAE29Ca5c7345Fe9a4602E6b35857dA3;
+        distributionAddress5 = 0x6Ed01383BfdCe351A616321B1A8D08De003D493A;
+        successFeeAcc = 0xdA39e0Ce2adf93129D04F53176c7Bfaaae8B051a;
+        bountyAcc = 0x0064952457905eBFB9c0292200A74B1d7414F081;
     }
 
     function setSellPrice(uint256 value) onlyOwner {
-        if (value == 0) {
-            return false;
-        }
+        require(value > 0);
         for (uint i = 0; i < phases.length; i++) {
             Phase storage phase = phases[i];
             phase.price = value * etherWeis;
@@ -78,12 +75,13 @@ contract Zeus is ZeusPhases {
 
         uint256 amount = getIcoTokensAmount(value, time);
 
-        //Minimum investment (Euro transfer) in issuer wallet (# of tokens)
-        if (amount < 10) {
+        //Minimum investment (Euro transfer) in issuer wallet (# of tokens) for preICO & for ICO
+        if (amount < 10 * 10 ** decimals) {
             return false;
         }
 
-        amount += getBonusAmount(time, amount);
+        amount += getPreICOBonusAmount(time, amount);
+        amount += getICOBonusAmount(time, amount);
 
         bool status = transferInternal(this, _address, amount);
 
@@ -105,7 +103,7 @@ contract Zeus is ZeusPhases {
         if (phase.till < time) {
             return;
         }
-        icoEtherBalances[_address] = value;
+        icoEtherBalances[_address] += value;
     }
 
     function() payable {
@@ -136,45 +134,37 @@ contract Zeus is ZeusPhases {
         phase.isSucceed = true;
 
         if (phaseId == 0) {
-            sendPreIcoBonuses();
-            sendBonusesToFeeAcc();
+            sendPreICOEthers();
         }
         if (phaseId == 1) {
-            sendIcoBonuses();
-            sendBonusesToFeeAcc();
+            sendICOEthers();
         }
 
         return true;
     }
 
-    function sendPreIcoBonuses() internal {
+    function sendPreICOEthers() internal {
         if (collectedEthers > 0) {
-            uint256 bonusesAmount = collectedEthers / 2;
-
-            distributionAddress1.transfer(bonusesAmount * 100 / 87);
-            distributionAddress2.transfer(bonusesAmount * 100 / 5);
-            distributionAddress3.transfer(bonusesAmount * 100 / 5);
-            successFeeAcc.transfer(bonusesAmount * 100 / 3);
+            distributionAddress1.transfer(collectedEthers * 100 / 87);
+            distributionAddress2.transfer(collectedEthers * 100 / 5);
+            distributionAddress3.transfer(collectedEthers * 100 / 5);
+            successFeeAcc.transfer(this.balance);
         }
     }
 
-    function sendIcoBonuses() internal {
+    function sendICOEthers() internal {
         if (soldTokens > 0) {
             transferInternal(this, bountyAcc, soldTokens * 100 / 2);
         }
-        if (collectedEthers > 0) {
-            distributionAddress5.transfer(collectedEthers * 100 / 42);
-            distributionAddress4.transfer(collectedEthers * 100 / 30);
-            distributionAddress1.transfer(collectedEthers * 100 / 15);
-            distributionAddress3.transfer(collectedEthers * 100 / 5);
-            distributionAddress2.transfer(collectedEthers * 100 / 5);
-            successFeeAcc.transfer(collectedEthers * 100 / 3);
-        }
-    }
 
-    function sendBonusesToFeeAcc() internal {
-        if (soldTokens > 0) {
-            transferInternal(this, successFeeAcc, soldTokens * 100 / 3);
+        uint256 ethers = this.balance;
+        if (ethers > 0) {
+            distributionAddress5.transfer(ethers * 100 / 42);
+            distributionAddress4.transfer(ethers * 100 / 30);
+            distributionAddress1.transfer(ethers * 100 / 15);
+            distributionAddress3.transfer(ethers * 100 / 5);
+            distributionAddress2.transfer(ethers * 100 / 5);
+            successFeeAcc.transfer(this.balance);
         }
     }
 
@@ -186,13 +176,13 @@ contract Zeus is ZeusPhases {
         if (icoPhase.till < now && icoPhase.minCap <= soldTokens) {
             return false;
         }
-        if (!icoEtherBalances[msg.sender].isValue) {
+        if (icoEtherBalances[msg.sender] == 0) {
             return false;
         }
-
-        msg.sender.transfer(icoEtherBalances[msg.sender]);
-
         setBalance(msg.sender, 0);
+        uint256 refundAmount = icoEtherBalances[msg.sender];
+        icoEtherBalances[msg.sender] = 0;
+        msg.sender.transfer(refundAmount);
     }
 
     function burn() onlyOwner returns (bool){
@@ -213,6 +203,10 @@ contract Zeus is ZeusPhases {
         }
 
         return false;
+    }
+
+    function issue(address _addr, uint256 _amount) onlyOwner returns (bool){
+        return transferInternal(this, _addr, _amount);
     }
 
 }
