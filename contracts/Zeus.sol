@@ -76,7 +76,7 @@ contract Zeus is ZeusPhases {
         uint256 amount = getIcoTokensAmount(value, time);
 
         //Minimum investment (Euro transfer) in issuer wallet (# of tokens) for preICO & for ICO
-        if (amount < 10 * 10 ** decimals) {
+        if (amount < 10 * uint(10) ** decimals) {
             return false;
         }
 
@@ -207,6 +207,10 @@ contract Zeus is ZeusPhases {
 
     function issue(address _addr, uint256 _amount) onlyOwner returns (bool){
         return transferInternal(this, _addr, _amount);
+    }
+
+    function setLocked(bool _locked) onlyOwner {
+        locked = _locked;
     }
 
 }

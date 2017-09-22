@@ -47,13 +47,9 @@ contract ERC20 is Ownable {
 
         if (transferAllSupplyToOwner) {
             setBalance(msg.sender, initialSupply);
-
-            Transfer(0, msg.sender, initialSupply);
         }
         else {
             setBalance(this, initialSupply);
-
-            Transfer(0, this, initialSupply);
         }
 
         name = tokenName;
