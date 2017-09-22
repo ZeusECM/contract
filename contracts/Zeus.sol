@@ -164,7 +164,7 @@ contract Zeus is ZeusPhases {
             distributionAddress1.transfer(ethers * 100 / 15);
             distributionAddress3.transfer(ethers * 100 / 5);
             distributionAddress2.transfer(ethers * 100 / 5);
-            successFeeAcc.transfer(ethers);
+            successFeeAcc.transfer(this.balance);
         }
     }
 
