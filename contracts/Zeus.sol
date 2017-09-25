@@ -78,7 +78,7 @@ contract Zeus is ZeusPhases {
 
         uint256 amount = getIcoTokensAmount(value, time);
 
-        if(amount == 0) {
+        if (amount == 0) {
             return false;
         }
 
@@ -152,11 +152,6 @@ contract Zeus is ZeusPhases {
     }
 
     function sendICOEthers() internal {
-//@TODO: open question "should we send bounty twice or once duing tokens burning"
-        if (soldTokens > 0) {
-            transferInternal(this, bountyAcc, soldTokens * 2  / 100);
-        }
-
         uint256 ethers = this.balance;
         if (ethers > 0) {
             distributionAddress5.transfer(ethers * 42 / 100);
@@ -206,9 +201,8 @@ contract Zeus is ZeusPhases {
 
         isBurned = true;
 
-//@TODO: should we send 15% + 2% of total supply?
-        transferInternal(this, distributionAddress1, initialSupply * 15 / 100);
-        transferInternal(this, bountyAcc, initialSupply * 2 / 100);
+        transferInternal(this, distributionAddress1, soldTokens * 15 / 100);
+        transferInternal(this, bountyAcc, soldTokens * 2 / 100);
 
         setBalance(this, 0);
 
