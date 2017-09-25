@@ -181,9 +181,6 @@ contract Zeus is ZeusPhases {
     }
 
     function burn() onlyOwner returns (bool){
-        if (burnTimeChange == 0) {
-            return false;
-        }
 
         Phase storage icoPhase = phases[1];
 
