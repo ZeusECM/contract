@@ -5,9 +5,6 @@ import './ZeusPhases.sol';
 
 
 contract Zeus is ZeusPhases {
-
-    uint256 public etherWeis = 1000000000000000000;
-
     uint256 public tokenPrice; //0.00420168 ether; 19/09/17 11:20 am
 
     uint256 public collectedEthers;
@@ -27,6 +24,8 @@ contract Zeus is ZeusPhases {
     address successFeeAcc;
 
     address bountyAcc;
+
+    bool isBurned;
 
     mapping (address => uint256) public icoEtherBalances;
 
@@ -79,13 +78,9 @@ contract Zeus is ZeusPhases {
 
         uint256 amount = getIcoTokensAmount(value, time);
 
-        //Minimum investment (Euro transfer) in issuer wallet (# of tokens) for preICO & for ICO
-        if (amount < 10 * uint256(10) ** decimals) {
+        if (amount == 0) {
             return false;
         }
-
-        amount += getPreICOBonusAmount(time, amount);
-        amount += getICOBonusAmount(time, amount);
 
         bool status = transferInternal(this, _address, amount);
 
@@ -157,10 +152,6 @@ contract Zeus is ZeusPhases {
     }
 
     function sendICOEthers() internal {
-        if (soldTokens > 0) {
-            transferInternal(this, bountyAcc, soldTokens * 2  / 100);
-        }
-
         uint256 ethers = this.balance;
         if (ethers > 0) {
             distributionAddress5.transfer(ethers * 42 / 100);
@@ -190,28 +181,29 @@ contract Zeus is ZeusPhases {
     }
 
     function burn() onlyOwner returns (bool){
-        if (burnTimeChange <= 0) {
-            return false;
-        }
+
         Phase storage icoPhase = phases[1];
+
         if (isSucceed(1) == false) {
             return false;
         }
+
         if (icoPhase.till + burnTimeChange > now) {
             return false;
         }
-        if (soldTokens < initialSupply) {
-            uint256 diff = initialSupply - soldTokens;
 
-            transferInternal(this, distributionAddress1, diff * 15 / 100);
-            transferInternal(this, bountyAcc, diff * 2 / 100);
-
-            setBalance(this, 0);
-
-            return true;
+        if(isBurned) {
+            return false;
         }
 
-        return false;
+        isBurned = true;
+
+        transferInternal(this, distributionAddress1, soldTokens * 15 / 100);
+        transferInternal(this, bountyAcc, soldTokens * 2 / 100);
+
+        setBalance(this, 0);
+
+        return true;
     }
 
     function issue(address _addr, uint256 _amount) onlyOwner returns (bool){
