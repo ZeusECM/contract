@@ -34,7 +34,10 @@ contract ZeusPhases is ERC20 {
         if (value == 0) {
             return 0;
         }
+
         uint256 amount = 0;
+        uint256 soldAmount = 0;
+
         for (uint i = 0; i < phases.length; i++) {
             Phase storage phase = phases[i];
             if (phase.since > time) {
@@ -45,11 +48,30 @@ contract ZeusPhases is ERC20 {
                 continue;
             }
 
-            amount += value * (uint256(10) ** decimals) / phase.price;
+            uint256 phaseAmount = value * (uint256(10) ** decimals) / phase.price;
 
+            soldAmount += phaseAmount;
+
+            uint256 bonusAmount;
+
+            if(i == 0) {
+                bonusAmount = getPreICOBonusAmount(time, phaseAmount);
+            }
+
+            if(i == 1) {
+                bonusAmount = getICOBonusAmount(time, phaseAmount);
+            }
+
+            amount += phaseAmount + bonusAmount;
+        
             if (phase.maxAmount < amount + soldTokens) {
                 return 0;
             }
+        }
+
+        //Minimum investment (Euro transfer) in issuer wallet (# of tokens) for preICO & for ICO
+        if (soldAmount < 10 * uint256(10) ** decimals) {
+            return 0;
         }
 
         return amount;

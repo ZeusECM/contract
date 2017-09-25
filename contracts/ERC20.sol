@@ -70,7 +70,7 @@ contract ERC20 is Ownable {
 
     function transferInternal(address _from, address _to, uint256 value) internal returns (bool success) {
         if (value == 0) {
-            return false;
+            return true;
         }
 
         if (balances[_from] < value) {
