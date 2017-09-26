@@ -183,45 +183,45 @@ contract('Zeus', function(accounts) {
             .then(() => Utils.balanceShouldEqualTo(instance, instance.address, new BigNumber(58000000).mul(precision).valueOf()))
     });
 
-    // it("should be able to buy tokens, change token price", function () {
-    //     var instance;
-    //     var preIcoSince = new Date().getTime() / 1000 - 3600 * 8;
-    //     var preIcoTill = new Date().getTime() / 1000 + 3600 * 10;
-    //
-    //     return Contract.new(
-    //         new BigNumber("0.0002332415916").mul(precision),
-    //         preIcoSince,
-    //         preIcoTill,
-    //         new BigNumber("55250000"),
-    //         "Uncharged TAU",
-    //         "UTAU",
-    //         false
-    //     ).then(function (_instance) {
-    //         instance = _instance;
-    //     })
-    //         .then(() => Utils.balanceShouldEqualTo(instance, instance.address, new BigNumber("55250000").valueOf()))
-    //         .then(function () {
-    //             return instance.sendTransaction({value: 1});
-    //         })
-    //         .then(Utils.receiptShouldSucceed)
-    //         .then(function () {
-    //             return instance.collectedEthers.call();
-    //         })
-    //         .then(function (result) {
-    //             assert.equal(result.valueOf(), "1", "collected amount is not equal");
-    //         })
-    //         .then(() => Utils.balanceShouldEqualTo(instance, accounts[0], "4287"))
-    //         .then(() => Utils.balanceShouldEqualTo(instance, instance.address, "55245713"))
-    //         .then(function () {
-    //             return instance.setTokenPrice(new BigNumber("0.0004").mul(precision));
-    //         })
-    //         .then(Utils.receiptShouldSucceed)
-    //         .then(function () {
-    //             return instance.sendTransaction({value: 1});
-    //         })
-    //         .then(Utils.receiptShouldSucceed)
-    //         .then(() => Utils.balanceShouldEqualTo(instance, accounts[0], "6787"))
-    //         .then(() => Utils.balanceShouldEqualTo(instance, instance.address, "55243213"))
-    // });
+    it("should be able to buy tokens, change token price", function () {
+        var instance;
+        var preIcoSince = new Date().getTime() / 1000 - 3600 * 8;
+        var preIcoTill = new Date().getTime() / 1000 + 3600 * 10;
+
+        return Contract.new(
+            new BigNumber("0.0002332415916").mul(precision),
+            preIcoSince,
+            preIcoTill,
+            new BigNumber("55250000"),
+            "Uncharged TAU",
+            "UTAU",
+            false
+        ).then(function (_instance) {
+            instance = _instance;
+        })
+            .then(() => Utils.balanceShouldEqualTo(instance, instance.address, new BigNumber("55250000").valueOf()))
+            .then(function () {
+                return instance.sendTransaction({value: 1});
+            })
+            .then(Utils.receiptShouldSucceed)
+            .then(function () {
+                return instance.collectedEthers.call();
+            })
+            .then(function (result) {
+                assert.equal(result.valueOf(), "1", "collected amount is not equal");
+            })
+            .then(() => Utils.balanceShouldEqualTo(instance, accounts[0], "4287"))
+            .then(() => Utils.balanceShouldEqualTo(instance, instance.address, "55245713"))
+            .then(function () {
+                return instance.setTokenPrice(new BigNumber("0.0004").mul(precision));
+            })
+            .then(Utils.receiptShouldSucceed)
+            .then(function () {
+                return instance.sendTransaction({value: 1});
+            })
+            .then(Utils.receiptShouldSucceed)
+            .then(() => Utils.balanceShouldEqualTo(instance, accounts[0], "6787"))
+            .then(() => Utils.balanceShouldEqualTo(instance, instance.address, "55243213"))
+    });
 
 });

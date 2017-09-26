@@ -30,15 +30,6 @@ contract ZeusPhases is ERC20 {
         standard = 'PhaseICO 0.1';
     }
 
-    function setSellPrice(uint256 value) onlyOwner {
-        require(value > 0);
-        for (uint i = 0; i < phases.length; i++) {
-            Phase storage phase = phases[i];
-            phase.price = value;
-        }
-    }
-
-
     function getIcoTokensAmount(uint256 value, uint256 time) returns (uint256) {
         if (value == 0) {
             return 0;

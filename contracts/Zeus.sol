@@ -64,6 +64,14 @@ contract Zeus is ZeusPriceTicker {
         bountyAcc = 0x0064952457905eBFB9c0292200A74B1d7414F081;
     }
 
+    function setSellPrice(uint256 value) onlyOwner {
+        require(value > 0);
+        for (uint i = 0; i < phases.length; i++) {
+            Phase storage phase = phases[i];
+            phase.price = value;
+        }
+    }
+
     function buy(address _address, uint256 time, uint256 value) internal returns (bool) {
         if (locked == true) {
             return false;

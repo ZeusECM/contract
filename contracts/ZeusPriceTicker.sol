@@ -26,13 +26,17 @@ contract ZeusPriceTicker is usingOraclize, ZeusPhases {
 
         uint256 price = 10 ** 18 / parseInt(result, 5);
 
-        setSellPrice(price);
+        require(price > 0);
+        for (uint i = 0; i < phases.length; i++) {
+            Phase storage phase = phases[i];
+            phase.price = price;
+        }
 
         newZeusPriceTicker(result);
     }
 
     function update() internal {
-        if (oraclizeLib.oraclize_getPrice("URL") > this.balance) {
+        if (oraclize_getPrice("URL") > this.balance) {
             newOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
         } else {
             newOraclizeQuery("Oraclize query was sent, standing by for the answer..");
