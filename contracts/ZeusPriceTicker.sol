@@ -27,7 +27,7 @@ contract ZeusPriceTicker is usingOraclize, ZeusPhases {
 //    function __callback(bytes32 myid, string result, bytes proof) {
         require(msg.sender == oraclize_cbAddress());
 
-        uint256 price = 10 ** 18 / parseInt(result, 5);
+        uint256 price = 10 ** 23 / parseInt(result, 5);
 
         require(price > 0);
         for (uint i = 0; i < phases.length; i++) {

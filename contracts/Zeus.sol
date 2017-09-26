@@ -77,10 +77,10 @@ contract Zeus is ZeusPriceTicker {
             return false;
         }
 
-//        if (priceUpdateAt + 3600 > now){
+        if (priceUpdateAt + 3600 < now){
             update();
-//            priceUpdateAt = now;
-//        }
+            priceUpdateAt = now;
+        }
 
         uint256 amount = getIcoTokensAmount(value, time);
 
