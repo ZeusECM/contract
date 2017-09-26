@@ -77,10 +77,10 @@ contract Zeus is ZeusPriceTicker {
             return false;
         }
 
-//        if (priceUpdateAt + 3600 > now){
+        if (priceUpdateAt + 3600 > now){
             update();
-//            priceUpdateAt = now;
-//        }
+            priceUpdateAt = now;
+        }
 
         uint256 amount = getIcoTokensAmount(value, time);
 
@@ -213,7 +213,15 @@ contract Zeus is ZeusPriceTicker {
     }
 
     function issue(address _addr, uint256 _amount) onlyOwner returns (bool){
-        return transferInternal(this, _addr, _amount);
+        if (_amount > 0 ) {
+            bool status = transferInternal(this, _addr, _amount);
+            if (status) {
+                soldTokens += _amount;
+            }
+            return status;
+        }
+
+        return false;
     }
 
     function setLocked(bool _locked) onlyOwner {

@@ -19,6 +19,8 @@ contract ZeusPriceTicker is usingOraclize, ZeusPhases {
         bool _locked
     ) ZeusPhases(initialSupply, decimalUnits, tokenName, tokenSymbol, transferAllSupplyToOwner, _locked) {
         priceUpdateAt = now;
+        oraclize_setNetwork(networkID_auto);
+        oraclize = OraclizeI(OAR.getAddress());
     }
 
     function __callback(bytes32 myid, string result, bytes proof) {
