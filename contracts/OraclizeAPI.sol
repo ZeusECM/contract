@@ -876,8 +876,8 @@ contract usingOraclize {
     function matchBytes32Prefix(bytes32 content, bytes prefix) internal returns (bool){
         bool match_ = true;
 
-        for (var i=0; i<prefix.length; i++){
-//        for (var i=uint8(0); i<prefix.length; i++){
+//        for (var i=0; i<prefix.length; i++){
+        for (var i=uint8(0); i<prefix.length; i++){
             if (content[i] != prefix[i]) match_ = false;
         }
 
