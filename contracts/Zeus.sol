@@ -1,10 +1,11 @@
 pragma solidity ^0.4.13;
 
 
-import './ZeusPhases.sol';
+import './ZeusPriceTicker.sol';
 
 
-contract Zeus is ZeusPhases {
+contract Zeus is ZeusPriceTicker {
+
     uint256 public tokenPrice; //0.00420168 ether; 19/09/17 11:20 am
 
     uint256 public collectedEthers;
@@ -46,7 +47,7 @@ contract Zeus is ZeusPhases {
         uint256 icoMinCap,
         uint256 _burnTimeChange,
         bool _locked
-    ) ZeusPhases(initialSupply, decimalUnits, tokenName, tokenSymbol, false, _locked) {
+    ) ZeusPriceTicker(initialSupply, decimalUnits, tokenName, tokenSymbol, false, _locked) {
         standard = 'Zeus 0.1';
         tokenPrice = _tokenPrice;
         burnTimeChange = _burnTimeChange;
@@ -61,14 +62,6 @@ contract Zeus is ZeusPhases {
         distributionAddress5 = 0x6Ed01383BfdCe351A616321B1A8D08De003D493A;
         successFeeAcc = 0xdA39e0Ce2adf93129D04F53176c7Bfaaae8B051a;
         bountyAcc = 0x0064952457905eBFB9c0292200A74B1d7414F081;
-    }
-
-    function setSellPrice(uint256 value) onlyOwner {
-        require(value > 0);
-        for (uint i = 0; i < phases.length; i++) {
-            Phase storage phase = phases[i];
-            phase.price = value;
-        }
     }
 
     function buy(address _address, uint256 time, uint256 value) internal returns (bool) {
@@ -192,7 +185,7 @@ contract Zeus is ZeusPhases {
             return false;
         }
 
-        if(isBurned) {
+        if (isBurned) {
             return false;
         }
 
