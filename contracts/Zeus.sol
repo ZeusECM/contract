@@ -1,10 +1,11 @@
 pragma solidity ^0.4.13;
 
 
-import './ZeusPhases.sol';
+import './ZeusPriceTicker.sol';
 
 
-contract Zeus is ZeusPhases {
+contract Zeus is ZeusPriceTicker {
+
     uint256 public tokenPrice; //0.00420168 ether; 19/09/17 11:20 am
 
     uint256 public collectedEthers;
@@ -46,7 +47,7 @@ contract Zeus is ZeusPhases {
         uint256 icoMinCap,
         uint256 _burnTimeChange,
         bool _locked
-    ) ZeusPhases(initialSupply, decimalUnits, tokenName, tokenSymbol, false, _locked) {
+    ) ZeusPriceTicker(initialSupply, decimalUnits, tokenName, tokenSymbol, false, _locked) {
         standard = 'Zeus 0.1';
         tokenPrice = _tokenPrice;
         burnTimeChange = _burnTimeChange;
@@ -74,6 +75,11 @@ contract Zeus is ZeusPhases {
     function buy(address _address, uint256 time, uint256 value) internal returns (bool) {
         if (locked == true) {
             return false;
+        }
+
+        if (priceUpdateAt + 3600 < now){
+            update();
+            priceUpdateAt = now;
         }
 
         uint256 amount = getIcoTokensAmount(value, time);
@@ -192,7 +198,7 @@ contract Zeus is ZeusPhases {
             return false;
         }
 
-        if(isBurned) {
+        if (isBurned) {
             return false;
         }
 
@@ -207,7 +213,15 @@ contract Zeus is ZeusPhases {
     }
 
     function issue(address _addr, uint256 _amount) onlyOwner returns (bool){
-        return transferInternal(this, _addr, _amount);
+        if (_amount > 0 ) {
+            bool status = transferInternal(this, _addr, _amount);
+            if (status) {
+                soldTokens += _amount;
+            }
+            return status;
+        }
+
+        return false;
     }
 
     function setLocked(bool _locked) onlyOwner {
